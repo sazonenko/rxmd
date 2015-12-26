@@ -1,0 +1,28 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+          http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <import resource="camel.xml" />
+    <camelContext id="camelContext" xmlns="http://camel.apache.org/schema/spring">
+        <routeBuilder ref="ru.thprom.mrp.md.RxRouteBuilder"/>
+        <routeContextRef ref="routeCtx"/>
+    </camelContext>
+
+    <!-- Transacted ActiveMQ -->
+    <bean id="jmsConnectionFactory" class="org.apache.activemq.spring.ActiveMQConnectionFactory" lazy-init="false">
+        <property name="brokerURL" value="tcp://localhost:61616?jms.redeliveryPolicy.maximumRedeliveries=1&amp;jms.prefetchPolicy.all=10&amp;create=false" />
+    </bean>
+    <bean id="jmsTransactionManager" class="org.springframework.jms.connection.JmsTransactionManager">
+        <property name="connectionFactory" ref="jmsConnectionFactory"/>
+    </bean>
+    <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
+        <property name="connectionFactory" ref="jmsConnectionFactory" />
+        <property name="transacted" value="true"/>
+        <property name="transactionManager" ref="jmsTransactionManager"/>
+        <property name="cacheLevel" value="1"/>
+    </bean>
+    <!-- /Transacted ActiveMQ -->
+
+</beans>

@@ -1,0 +1,20 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+    ">
+
+    <!-- this is an included XML file where we only the the routeContext -->
+    <routeContext id="routeCtx" xmlns="http://camel.apache.org/schema/spring">
+        <route id="r1">
+            <from uri="activemq:inbound.00"/>
+            <to  uri="direct:start"/>
+        </route>
+        <route id="r2">
+            <from uri="direct:end"/>
+            <to uri="activemq:result"/>
+        </route>
+    </routeContext>
+
+</beans>
