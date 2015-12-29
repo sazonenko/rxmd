@@ -4,15 +4,12 @@
           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
           http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
-    <import resource="camel.xml" />
-    <camelContext id="camelContext" xmlns="http://camel.apache.org/schema/spring">
-        <routeBuilder ref="ru.thprom.mrp.md.RxRouteBuilder"/>
-        <routeContextRef ref="routeCtx"/>
-    </camelContext>
+    <bean id="rxRoute" class="ru.thprom.mrp.md.RxRouteBuilder"/>
+    <bean id="processRoute" class="ru.thprom.mrp.md.ProcessRouteBuilder"/>
 
     <!-- Transacted ActiveMQ -->
     <bean id="jmsConnectionFactory" class="org.apache.activemq.spring.ActiveMQConnectionFactory" lazy-init="false">
-        <property name="brokerURL" value="tcp://localhost:61616?jms.redeliveryPolicy.maximumRedeliveries=1&amp;jms.prefetchPolicy.all=10&amp;create=false" />
+        <property name="brokerURL" value="tcp://localhost:61616?jms.redeliveryPolicy.maximumRedeliveries=1&amp;jms.prefetchPolicy.all=10" />
     </bean>
     <bean id="jmsTransactionManager" class="org.springframework.jms.connection.JmsTransactionManager">
         <property name="connectionFactory" ref="jmsConnectionFactory"/>
@@ -24,5 +21,19 @@
         <property name="cacheLevel" value="1"/>
     </bean>
     <!-- /Transacted ActiveMQ -->
+
+    <camelContext id="camelContext" xmlns="http://camel.apache.org/schema/spring">
+        <routeBuilder ref="rxRoute"/>
+
+        <route id="r1">
+            <from uri="activemq:inbound.00"/>
+            <to  uri="direct:start"/>
+        </route>
+        <route id="r2">
+            <from uri="direct:end"/>
+            <to uri="activemq:result"/>
+        </route>
+    </camelContext>
+
 
 </beans>

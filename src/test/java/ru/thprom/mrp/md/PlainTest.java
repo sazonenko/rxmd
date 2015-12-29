@@ -8,61 +8,59 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.spring.DisableJmx;
 import org.apache.camel.testng.CamelSpringTestSupport;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.apache.xbean.spring.context.ClassPathXmlApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
 import org.testng.annotations.Test;
 
 /**
  * Created by void on 09.12.15
  */
-@ContextConfiguration(locations = {"classpath:beans.xml"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @DisableJmx(false)
 public class PlainTest extends CamelSpringTestSupport {
 
-	protected CamelContext camelContext;
+    protected CamelContext camelContext;
 
-	@EndpointInject(uri = "mock:result")
-	protected MockEndpoint mockResult;
+    @EndpointInject(uri = "mock:result")
+    protected MockEndpoint mockResult;
 
-	@Produce(uri = "direct:startTest")
-	protected ProducerTemplate start;
+    @Produce(uri = "direct:startTest")
+    protected ProducerTemplate start;
 
-	@Test
-	public void testPositive() throws Exception {
-		String body = "<test/>";
+    @Test
+    public void testPositive() throws Exception {
+        String body = "<test/>";
 
-		mockResult.expectedBodiesReceived(body);
+        mockResult.expectedBodiesReceived(body);
 
-		start.sendBodyAndHeader(body, "foo", "bar");
+        start.sendBodyAndHeader(body, "foo", "bar");
 
-		MockEndpoint.assertIsSatisfied(camelContext);
-	}
+        MockEndpoint.assertIsSatisfied(camelContext);
+    }
 
-	@Override
-	protected AbstractApplicationContext createApplicationContext() {
-		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(MainContext.class);
-		camelContext = applicationContext.getBean("camelContext", CamelContext.class);
-		Environment env = applicationContext.getBean(Environment.class);
-		addTestRoutes(env);
-		return applicationContext;
-	}
+    @Override
+    protected AbstractApplicationContext createApplicationContext() {
+        AbstractApplicationContext applicationContext = new ClassPathXmlApplicationContext("beans.xml");
+        camelContext = applicationContext.getBean("camelContext", CamelContext.class);
+        Environment env = applicationContext.getBean(Environment.class);
+        addTestRoutes(env);
+        return applicationContext;
+    }
 
-	private void addTestRoutes(final Environment env) {
-		try {
-			camelContext.addRoutes(new RouteBuilder() {
-				@Override
-				public void configure() throws Exception {
-					from("direct:startTest").to(env.getProperty("broker.queue.incoming"));
-					from("activemq:result").to("mock:result");
-				}
-			});
-		} catch (Exception e) {
-			log.error("Can't add routes in context", e);
-		}
-	}
+    private void addTestRoutes(final Environment env) {
+        try {
+            camelContext.addRoutes(new RouteBuilder() {
+                @Override
+                public void configure() throws Exception {
+                    from("direct:startTest").to("activemq:inbound.00");
+                    from("activemq:result").to("mock:result");
+                }
+            });
+        } catch (Exception e) {
+            log.error("Can't add routes in context", e);
+        }
+    }
 }
 

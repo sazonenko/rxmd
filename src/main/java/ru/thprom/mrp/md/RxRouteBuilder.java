@@ -7,11 +7,13 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.rx.ReactiveCamel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import rx.Observable;
 
 /**
  * Created by void on 09.12.15
  */
+@Component("rxRoute")
 public class RxRouteBuilder extends RouteBuilder {
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
