@@ -20,16 +20,25 @@ public class RxRouteBuilder extends RouteBuilder {
 	@Produce(uri = "direct:end")
 	private ProducerTemplate end;
 
+	private FileStore fileStore;
+
 	@Override
 	public void configure() throws Exception {
 		log.debug("before configure RX routes");
 		ReactiveCamel reactiveCamel = new ReactiveCamel(getContext());
 		Observable<Message> src = reactiveCamel.toObservable("direct:start");
 
-		src		.map(m -> m.getBody(String.class))
+		src     .doOnNext(m -> fileStore.storeFile(m))
+				.map(m -> m.getBody(String.class))
 				.doOnNext(System.out::println)
-				.subscribe(s -> end.sendBody(s));
+				.subscribe(
+						s -> end.sendBody(s),
+						error -> {System.out.println("Fail: " + error); error.printStackTrace();}
+				);
 
 	}
 
+	public void setFileStore(FileStore fileStore) {
+		this.fileStore = fileStore;
+	}
 }

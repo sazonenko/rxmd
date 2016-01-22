@@ -4,8 +4,12 @@
           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
           http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
-    <bean id="rxRoute" class="ru.thprom.mrp.md.RxRouteBuilder"/>
-    <bean id="processRoute" class="ru.thprom.mrp.md.ProcessRouteBuilder"/>
+    <bean id="rxRoute" class="ru.thprom.mrp.md.RxRouteBuilder">
+        <property name="fileStore" ref="fileStore"/>
+    </bean>
+    <bean id="fileStore" class="ru.thprom.mrp.md.FileStore">
+        <property name="storeRoot" value="/tmp/mdstore"/>
+    </bean>
 
     <!-- Transacted ActiveMQ -->
     <bean id="jmsConnectionFactory" class="org.apache.activemq.spring.ActiveMQConnectionFactory" lazy-init="false">

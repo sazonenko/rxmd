@@ -34,13 +34,10 @@ public class MainContext {
 	@Autowired
 	private Environment env;
 
-/*
 	@Bean
 	public SpringCamelContext camelContext() throws Exception {
 		SpringCamelContext camelContext = SpringCamelContext.springCamelContext("camel.xml");
 		camelContext.addComponent("activemq", activemq());
-*/
-/*
 		camelContext.addRoutes(new RouteBuilder() {
 			@Override
 			public void configure() throws Exception {
@@ -48,13 +45,21 @@ public class MainContext {
 				from("direct:end").to("activemq:result");
 			}
 		});
-*//*
 
-		camelContext.addRoutes(new RxRouteBuilder());
+
+		camelContext.addRoutes(rxRouteBuilder());
 		return camelContext;
 	}
-*/
-/*
+
+	@Bean
+	public RxRouteBuilder rxRouteBuilder() {
+		RxRouteBuilder rxRouteBuilder = new RxRouteBuilder();
+		FileStore fileStore = new FileStore();
+		fileStore.setStoreRoot(env.getProperty("md.store.root"));
+		rxRouteBuilder.setFileStore(fileStore);
+		return rxRouteBuilder;
+	}
+
 	@Bean
 	public ActiveMQComponent activemq() {
 		ActiveMQComponent activeMQComponent = new ActiveMQComponent();
@@ -74,5 +79,4 @@ public class MainContext {
 		);
 		return connectionFactory;
 	}
-*/
 }
