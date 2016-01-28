@@ -33,7 +33,7 @@ public class RxRouteBuilder extends RouteBuilder {
 				.doOnNext(System.out::println)
 				.subscribe(
 						s -> end.sendBody(s),
-						error -> {System.out.println("Fail: " + error); error.printStackTrace();}
+						error -> log.error("Error in input route : " , error)
 				);
 
 	}

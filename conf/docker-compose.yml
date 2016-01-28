@@ -1,0 +1,24 @@
+md_activemq:
+  container_name: md_activemq
+  hostname: activemq.md
+  net: rxmd
+  image: webcenter/activemq:latest
+  volumes:
+    - ./data/activemq:/data/activemq
+    - ./data/activemq/vlog:/var/log/activemq
+    - ./etc/activemq/activemq.xml:/opt/activemq/conf/activemq.xml
+    - ./etc/activemq/login.config:/opt/activemq/conf/login.config
+  ports:
+    - "8161:8161"
+    - "61616:61616"
+
+md_mongodb:
+  container_name: md_mongodb
+  hostname: mongodb.md
+  net: rxmd
+  image: mongo:3.2.0
+  volumes:
+#    - ./data/mongo:/data/db
+    - ./etc/mongo:/etc/mongo
+  command: -f /etc/mongo/mongodb.conf
+
