@@ -14,7 +14,7 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		ApplicationContext appContext = new AnnotationConfigApplicationContext(MainContext.class);
+		ApplicationContext appContext = new AnnotationConfigApplicationContext(CamelContextConfiguration.class);
 		CamelContext camelContext = appContext.getBean("camelContext", CamelContext.class);
 		ReactiveCamel rx = new ReactiveCamel(camelContext);
 

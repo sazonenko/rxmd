@@ -1,9 +1,9 @@
 package ru.thprom.mrp.md;
 
 import org.apache.camel.Message;
-import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.model.ModelCamelContext;
 import org.apache.camel.rx.ReactiveCamel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,22 +17,23 @@ import rx.Observable;
 public class RxRouteBuilder extends RouteBuilder {
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	@Produce(uri = "direct:end")
-	private ProducerTemplate end;
-
 	private FileStore fileStore;
 
 	@Override
 	public void configure() throws Exception {
 		log.debug("before configure RX routes");
-		ReactiveCamel reactiveCamel = new ReactiveCamel(getContext());
+
+		ModelCamelContext context = getContext();
+		ProducerTemplate end = context.createProducerTemplate();
+
+		ReactiveCamel reactiveCamel = new ReactiveCamel(context);
 		Observable<Message> src = reactiveCamel.toObservable("direct:start");
 
 		src     .doOnNext(m -> fileStore.storeFile(m))
 				.map(m -> m.getBody(String.class))
 				.doOnNext(System.out::println)
 				.subscribe(
-						s -> end.sendBody(s),
+						s -> end.sendBody("direct:end", s),
 						error -> log.error("Error in input route : " , error)
 				);
 

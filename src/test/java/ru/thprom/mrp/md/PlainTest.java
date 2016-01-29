@@ -9,6 +9,7 @@ import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.spring.DisableJmx;
 import org.apache.camel.testng.CamelSpringTestSupport;
 import org.apache.xbean.spring.context.ClassPathXmlApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.test.annotation.DirtiesContext;
@@ -42,7 +43,8 @@ public class PlainTest extends CamelSpringTestSupport {
 
     @Override
     protected AbstractApplicationContext createApplicationContext() {
-        AbstractApplicationContext applicationContext = new ClassPathXmlApplicationContext("beans.xml");
+        AbstractApplicationContext applicationContext = new AnnotationConfigApplicationContext(CamelContextConfiguration.class);
+//        AbstractApplicationContext applicationContext = new ClassPathXmlApplicationContext("beans.xml");
         camelContext = applicationContext.getBean("camelContext", CamelContext.class);
         Environment env = applicationContext.getBean(Environment.class);
         addTestRoutes(env);
