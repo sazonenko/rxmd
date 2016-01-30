@@ -42,10 +42,21 @@ public class CamelContextConfiguration extends SingleRouteCamelConfiguration imp
 		return new RouteBuilder() {
 			@Override
 			public void configure() throws Exception {
-				from(env.getProperty("broker.queue.incoming")).to("direct:start");
+				from(env.getProperty("md.test.queue"))
+						.setHeader(Constants.HEADER_PACKAGE_PRODUCER, constant(env.getProperty("md.test.code")))
+						.to("direct:start");
 				from("direct:end").to("activemq:result");
 			}
 		};
+	}
+
+	@Bean
+	public MongoStore mongoStore() {
+		MongoStore mongoStore = new MongoStore();
+		mongoStore.setConnectionURI(env.getProperty("mongo.url"));
+		mongoStore.setDatabaseName(env.getProperty("mongo.database"));
+		mongoStore.connect();
+		return mongoStore;
 	}
 
 	@Bean
@@ -54,6 +65,7 @@ public class CamelContextConfiguration extends SingleRouteCamelConfiguration imp
 		FileStore fileStore = new FileStore();
 		fileStore.setStoreRoot(env.getProperty("md.store.root"));
 		rxRouteBuilder.setFileStore(fileStore);
+		rxRouteBuilder.setMongoStore(mongoStore());
 		return rxRouteBuilder;
 	}
 

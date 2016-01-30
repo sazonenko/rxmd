@@ -18,6 +18,7 @@ public class RxRouteBuilder extends RouteBuilder {
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	private FileStore fileStore;
+	private MongoStore mongoStore;
 
 	@Override
 	public void configure() throws Exception {
@@ -30,6 +31,8 @@ public class RxRouteBuilder extends RouteBuilder {
 		Observable<Message> src = reactiveCamel.toObservable("direct:start");
 
 		src     .doOnNext(m -> fileStore.storeFile(m))
+				.doOnNext(m -> mongoStore.saveEvent(m.getHeader(Constants.HEADER_CAMEL_FILE_NAME, String.class),
+						m.getHeader(Constants.HEADER_ATTACHMENT_PATH, String.class)))
 				.map(m -> m.getBody(String.class))
 				.doOnNext(System.out::println)
 				.subscribe(
@@ -41,5 +44,9 @@ public class RxRouteBuilder extends RouteBuilder {
 
 	public void setFileStore(FileStore fileStore) {
 		this.fileStore = fileStore;
+	}
+
+	public void setMongoStore(MongoStore mongoStore) {
+		this.mongoStore = mongoStore;
 	}
 }

@@ -25,9 +25,9 @@ public class MongoStore {
 		database = mongoClient.getDatabase(databaseName);
 	}
 
-	public void saveEvent(String guid, String path) {
+	public void saveEvent(String filename, String path) {
 		MongoCollection<Document> incoming = database.getCollection(COLLECTION_INCOMING);
-		Document document = new Document("package", guid)
+		Document document = new Document("filename", filename)
 				.append("path", path)
 				.append("state", "income")
 				.append("mTime", new Date());

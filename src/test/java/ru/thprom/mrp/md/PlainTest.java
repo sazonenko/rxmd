@@ -56,7 +56,7 @@ public class PlainTest extends CamelSpringTestSupport {
             camelContext.addRoutes(new RouteBuilder() {
                 @Override
                 public void configure() throws Exception {
-                    from("direct:startTest").to("activemq:inbound.00");
+                    from("direct:startTest").to(env.getProperty("md.test.queue"));
                     from("activemq:result").to("mock:result");
                 }
             });
