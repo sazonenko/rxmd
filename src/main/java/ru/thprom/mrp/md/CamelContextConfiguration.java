@@ -96,6 +96,7 @@ public class CamelContextConfiguration extends SingleRouteCamelConfiguration imp
 		activeMQComponent.setTransacted(true);
 		activeMQComponent.setConnectionFactory(connectionFactory());
 		activeMQComponent.setTransactionManager(new JmsTransactionManager(connectionFactory()));
+		activeMQComponent.setCacheLevelName("CACHE_CONSUMER");
 		return activeMQComponent;
 	}
 

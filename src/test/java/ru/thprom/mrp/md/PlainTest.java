@@ -44,7 +44,6 @@ public class PlainTest extends CamelSpringTestSupport {
     @Override
     protected AbstractApplicationContext createApplicationContext() {
         AbstractApplicationContext applicationContext = new AnnotationConfigApplicationContext(CamelContextConfiguration.class);
-//        AbstractApplicationContext applicationContext = new ClassPathXmlApplicationContext("beans.xml");
         camelContext = applicationContext.getBean("camelContext", CamelContext.class);
         Environment env = applicationContext.getBean(Environment.class);
         addTestRoutes(env);
