@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RegFolder>
+<eDocument Version="06"/>
+<Info>
+<GUID>14e72963-2464-4570-bb80-5209bcff12fc</GUID>
+<Type>1</Type>
+<Sender Code="00.0.4.1" Date="2014-04-03T15:38:27.955+04:00"/>
+<Recipient Code_OKATO="60000000000" Code_OKTMO="" Code="50.0.6.21" Module_Type="3"/>
+<Attach>
+<Name>req_14e72963-2464-4570-bb80-5209bcff12fc.zip</Name>
+</Attach>
+</Info>
+<GUID>736d76b0-b957-47a6-980d-21cfcb848f06</GUID>
+<Number>45-106</Number>
+<Request>
+<GUID>8c6c64e2-2f24-425b-9336-cdb43737535b</GUID>
+<Type>558102100000</Type>
+<Action>659008002001</Action>
+<Number>45-106</Number>
+<Date>2014-04-03T15:38:27.955+04:00</Date>
+<Date_Execution>2014-04-10+04:00</Date_Execution>
+<Status>001</Status>
+<Organization_Code>Organ_Code</Organization_Code>
+<Tax_Free>true</Tax_Free>
+<Executive>
+<FIO>
+<Surname>Surname</Surname>
+<First>First</First>
+<Patronymic>Patronymic</Patronymic>
+</FIO>
+</Executive>
+<Date_Recive>2014-04-03T15:38:27.955+04:00</Date_Recive>
+<Type_Info>112</Type_Info>
+</Request>
+</RegFolder>

@@ -8,12 +8,17 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.spring.DisableJmx;
 import org.apache.camel.testng.CamelSpringTestSupport;
-import org.apache.xbean.spring.context.ClassPathXmlApplicationContext;
+import org.apache.commons.io.FileUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.test.annotation.DirtiesContext;
+import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by void on 09.12.15
@@ -21,6 +26,9 @@ import org.testng.annotations.Test;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @DisableJmx(false)
 public class PlainTest extends CamelSpringTestSupport {
+
+	private static final String FS = "/";
+	private Environment env;
 
     protected CamelContext camelContext;
 
@@ -41,11 +49,34 @@ public class PlainTest extends CamelSpringTestSupport {
         MockEndpoint.assertIsSatisfied(camelContext);
     }
 
-    @Override
+    @Test
+    public void testFilePositive() throws Exception {
+		String fileName = "package_14e72963-2464-4570-bb80-5209bcff12fc.xml";
+        File body = new File(this.getClass().getResource(fileName).toURI());
+
+        mockResult.expectedMessageCount(1);
+
+		Date now = new Date();
+		SimpleDateFormat month = new SimpleDateFormat("yyyy-MM");
+		SimpleDateFormat day = new SimpleDateFormat("dd");
+		String storeDir = env.getProperty("md.store.root") + FS + month.format(now) + FS + day.format(now) + FS + env.getProperty("md.test.code") + FS;
+
+		File result = new File(storeDir, fileName);
+		result.delete();
+
+		start.sendBodyAndHeader(body, Constants.HEADER_CAMEL_FILE_NAME, fileName);
+
+
+		MockEndpoint.assertIsSatisfied(camelContext);
+
+		Assert.assertTrue(FileUtils.contentEquals(body, result));
+    }
+
+	@Override
     protected AbstractApplicationContext createApplicationContext() {
         AbstractApplicationContext applicationContext = new AnnotationConfigApplicationContext(CamelContextConfiguration.class);
         camelContext = applicationContext.getBean("camelContext", CamelContext.class);
-        Environment env = applicationContext.getBean(Environment.class);
+        env = applicationContext.getBean(Environment.class);
         addTestRoutes(env);
         return applicationContext;
     }
