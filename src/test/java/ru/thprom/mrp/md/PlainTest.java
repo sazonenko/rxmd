@@ -69,7 +69,9 @@ public class PlainTest extends CamelSpringTestSupport {
 
 		MockEndpoint.assertIsSatisfied(camelContext);
 
-		Assert.assertTrue(FileUtils.contentEquals(body, result));
+		log.debug("before testing result file");
+		Assert.assertTrue(result.exists(), "Is file exist");
+		Assert.assertTrue(FileUtils.contentEquals(body, result), "Is files are same?");
     }
 
 	@Override

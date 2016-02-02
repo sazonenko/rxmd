@@ -60,21 +60,21 @@ public class CamelContextConfiguration extends SingleRouteCamelConfiguration imp
 	}
 
 	@Bean
-	public RxRouteBuilder rxRouteBuilder() {
-		RxRouteBuilder rxRouteBuilder = new RxRouteBuilder();
+	public InputRouteBuilder inputRouteBuilder() {
+		InputRouteBuilder inputRouteBuilder = new InputRouteBuilder();
 		FileStore fileStore = new FileStore();
 		fileStore.setStoreRoot(env.getProperty("md.store.root"));
-		rxRouteBuilder.setFileStore(fileStore);
-		rxRouteBuilder.setMongoStore(mongoStore());
-		return rxRouteBuilder;
+		inputRouteBuilder.setFileStore(fileStore);
+		inputRouteBuilder.setMongoStore(mongoStore());
+		return inputRouteBuilder;
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		ApplicationContext applicationContext = getApplicationContext();
-		RouteBuilder rxRoute = (RouteBuilder) applicationContext.getBean("rxRouteBuilder");
+		RouteBuilder inputRoute = (RouteBuilder) applicationContext.getBean("inputRouteBuilder");
 		CamelContext camelContext = (CamelContext) applicationContext.getBean("camelContext");
-		camelContext.addRoutes(rxRoute);
+		camelContext.addRoutes(inputRoute);
 	}
 
 	/**

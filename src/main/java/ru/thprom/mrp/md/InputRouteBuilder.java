@@ -14,7 +14,7 @@ import rx.Observable;
  * Created by void on 09.12.15
  */
 @Component("rxRoute")
-public class RxRouteBuilder extends RouteBuilder {
+public class InputRouteBuilder extends RouteBuilder {
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	private FileStore fileStore;
@@ -31,12 +31,12 @@ public class RxRouteBuilder extends RouteBuilder {
 		Observable<Message> src = reactiveCamel.toObservable("direct:start");
 
 		src     .doOnNext(m -> fileStore.storeFile(m))
-				.doOnNext(m -> mongoStore.saveEvent(m.getHeader(Constants.HEADER_CAMEL_FILE_NAME, String.class),
+				.doOnNext(m -> mongoStore.saveEvent(
+						m.getHeader(Constants.HEADER_CAMEL_FILE_NAME, String.class),
 						m.getHeader(Constants.HEADER_ATTACHMENT_PATH, String.class)))
-				.map(m -> m.getBody(String.class))
-				.doOnNext(System.out::println)
+				.doOnNext(m -> end.sendBody("direct:end", m))
 				.subscribe(
-						s -> end.sendBody("direct:end", s),
+						m -> log.debug("Received file: {}", m.getHeader(Constants.HEADER_CAMEL_FILE_NAME, String.class)),
 						error -> log.error("Error in input route : " , error)
 				);
 
