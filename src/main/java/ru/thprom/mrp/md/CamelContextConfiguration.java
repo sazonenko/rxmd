@@ -18,6 +18,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.connection.JmsTransactionManager;
+import ru.thprom.mrp.md.process.RxMongo;
 
 import javax.jms.ConnectionFactory;
 
@@ -57,6 +58,13 @@ public class CamelContextConfiguration extends SingleRouteCamelConfiguration imp
 		mongoStore.setDatabaseName(env.getProperty("mongo.database"));
 		mongoStore.connect();
 		return mongoStore;
+	}
+
+	@Bean
+	public RxMongo rxMongo() {
+		RxMongo rxMongo = new RxMongo();
+		rxMongo.setMongoStore(mongoStore());
+		return rxMongo;
 	}
 
 	@Bean

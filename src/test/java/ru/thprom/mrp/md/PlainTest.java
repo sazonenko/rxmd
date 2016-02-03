@@ -6,6 +6,7 @@ import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.rx.ObservableBody;
 import org.apache.camel.test.spring.DisableJmx;
 import org.apache.camel.testng.CamelSpringTestSupport;
 import org.apache.commons.io.FileUtils;
@@ -15,10 +16,14 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import ru.thprom.mrp.md.process.RxMongo;
+import ru.thprom.mrp.md.process.RxRange;
+import rx.Observable;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Created by void on 09.12.15
@@ -32,22 +37,13 @@ public class PlainTest extends CamelSpringTestSupport {
 
     protected CamelContext camelContext;
 
-    @EndpointInject(uri = "mock:result")
+	private RxMongo rxMongo;
+
+	@EndpointInject(uri = "mock:result")
     protected MockEndpoint mockResult;
 
     @Produce(uri = "direct:startTest")
     protected ProducerTemplate start;
-
-    @Test
-    public void testPositive() throws Exception {
-        String body = "<test/>";
-
-        mockResult.expectedBodiesReceived(body);
-
-        start.sendBodyAndHeader(body, "foo", "bar");
-
-        MockEndpoint.assertIsSatisfied(camelContext);
-    }
 
     @Test
     public void testFilePositive() throws Exception {
@@ -66,7 +62,6 @@ public class PlainTest extends CamelSpringTestSupport {
 
 		start.sendBodyAndHeader(body, Constants.HEADER_CAMEL_FILE_NAME, fileName);
 
-
 		MockEndpoint.assertIsSatisfied(camelContext);
 
 		log.debug("before testing result file");
@@ -74,13 +69,26 @@ public class PlainTest extends CamelSpringTestSupport {
 		Assert.assertTrue(FileUtils.contentEquals(body, result), "Is files are same?");
     }
 
+	@Test
+	public void testInputProcess() {
+		Observable<Map> mongo = rxMongo.toObservable();
+		mongo.take(1).subscribe(
+				System.out::println,
+				Throwable::printStackTrace,
+				() -> System.out.println("Done")
+		);
+	}
+
 	@Override
     protected AbstractApplicationContext createApplicationContext() {
         AbstractApplicationContext applicationContext = new AnnotationConfigApplicationContext(CamelContextConfiguration.class);
         camelContext = applicationContext.getBean("camelContext", CamelContext.class);
         env = applicationContext.getBean(Environment.class);
         addTestRoutes(env);
-        return applicationContext;
+
+		rxMongo = (RxMongo) applicationContext.getBean("mongoStore");
+
+		return applicationContext;
     }
 
     private void addTestRoutes(final Environment env) {

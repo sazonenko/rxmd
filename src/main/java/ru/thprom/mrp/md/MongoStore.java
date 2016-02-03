@@ -6,9 +6,12 @@ import com.mongodb.MongoClientURI;
 import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.FindOneAndUpdateOptions;
+import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Created by void on 11.12.15
@@ -34,6 +37,14 @@ public class MongoStore {
 				.append("state", "income")
 				.append("mTime", new Date());
 		incoming.insertOne(document);
+	}
+
+	public Map<String, Object> getIncomeEvent() {
+		MongoCollection<Document> incoming = database.getCollection(COLLECTION_INCOMING);
+		Document filter = new Document("state", "income");
+		Document update = new Document("$set", new Document("state", "process").append("mTime", new Date()));
+
+		return incoming.findOneAndUpdate(filter, update, new FindOneAndUpdateOptions().sort(new Document("_id", 1)));
 	}
 
 	public void close() {
