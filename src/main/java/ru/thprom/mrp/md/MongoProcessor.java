@@ -46,6 +46,10 @@ public class MongoProcessor {
 	}
 
 	public static void main(String args[]) throws Exception {
-		new MongoProcessor().process();
+		//new MongoProcessor().process();
+		int i=0;
+		do {
+			System.out.println("" + i++);
+		} while (i <10);
 	}
 }

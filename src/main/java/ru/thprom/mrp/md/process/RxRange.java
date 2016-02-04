@@ -49,6 +49,7 @@ public final class RxRange
 		}
 		@Override
 		public void request(long n) {
+			System.out.println("requested: "+ n);
 			if (n < 0) {
 				throw new IllegalArgumentException();
 			}
@@ -97,8 +98,8 @@ public final class RxRange
 		Observable<Integer> range =
 				new RxRange(1, 10).toObservable();
 
-		range.take(5).subscribe(
-		//range.subscribe(
+		//range.take(5).subscribe(
+		range.subscribe(
 				System.out::println,
 				Throwable::printStackTrace,
 				() -> System.out.println("Done")

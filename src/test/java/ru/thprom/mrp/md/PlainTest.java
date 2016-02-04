@@ -86,7 +86,7 @@ public class PlainTest extends CamelSpringTestSupport {
         env = applicationContext.getBean(Environment.class);
         addTestRoutes(env);
 
-		rxMongo = (RxMongo) applicationContext.getBean("mongoStore");
+		rxMongo = (RxMongo) applicationContext.getBean("rxMongo");
 
 		return applicationContext;
     }
