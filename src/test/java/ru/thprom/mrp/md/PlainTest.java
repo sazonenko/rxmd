@@ -6,7 +6,6 @@ import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.rx.ObservableBody;
 import org.apache.camel.test.spring.DisableJmx;
 import org.apache.camel.testng.CamelSpringTestSupport;
 import org.apache.commons.io.FileUtils;
@@ -17,7 +16,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import ru.thprom.mrp.md.process.RxMongo;
-import ru.thprom.mrp.md.process.RxRange;
 import rx.Observable;
 
 import java.io.File;

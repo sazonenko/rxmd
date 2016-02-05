@@ -39,8 +39,8 @@ public class MongoStore {
 		incoming.insertOne(document);
 	}
 
-	public Map<String, Object> getIncomeEvent() {
-		MongoCollection<Document> incoming = database.getCollection(COLLECTION_INCOMING);
+	public Map<String, Object> getIncomeEvent(String collection) {
+		MongoCollection<Document> incoming = database.getCollection(collection);
 		Document filter = new Document("state", "income");
 		Document update = new Document("$set", new Document("state", "process").append("mTime", new Date()));
 

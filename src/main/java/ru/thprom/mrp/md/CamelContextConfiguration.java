@@ -62,7 +62,7 @@ public class CamelContextConfiguration extends SingleRouteCamelConfiguration imp
 
 	@Bean
 	public RxMongo rxMongo() {
-		RxMongo rxMongo = new RxMongo();
+		RxMongo rxMongo = new RxMongo(MongoStore.COLLECTION_INCOMING);
 		rxMongo.setMongoStore(mongoStore());
 		return rxMongo;
 	}

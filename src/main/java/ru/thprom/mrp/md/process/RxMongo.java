@@ -9,9 +9,6 @@ import rx.Subscriber;
 import rx.internal.operators.BackpressureUtils;
 
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -23,7 +20,14 @@ public final class RxMongo implements Observable.OnSubscribe<Map> {
 
 	private AtomicLong requested = new AtomicLong(0);
 	private MongoStore mongoStore;
-	ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+	private String collection;
+
+	private TimeUnit checkDelayTimeUnit = TimeUnit.MILLISECONDS;
+	private long checkDelay = 1000;
+
+	public RxMongo(String collection) {
+		this.collection = collection;
+	}
 
 	@Override
 	public void call(Subscriber<? super Map> subscriber) {
@@ -37,6 +41,14 @@ public final class RxMongo implements Observable.OnSubscribe<Map> {
 
 	public void setMongoStore(MongoStore mongoStore) {
 		this.mongoStore = mongoStore;
+	}
+
+	public void setCheckDelayTimeUnit(TimeUnit checkDelayTimeUnit) {
+		this.checkDelayTimeUnit = checkDelayTimeUnit;
+	}
+
+	public void setCheckDelay(long checkDelay) {
+		this.checkDelay = checkDelay;
 	}
 
 	class MongoProducer implements Producer {
@@ -60,52 +72,34 @@ public final class RxMongo implements Observable.OnSubscribe<Map> {
 
 			long batchSize = n;
 			do {
-				if (child.isUnsubscribed()) {
-					return;
-				}
 				long emitted = 0;
 				while (batchSize > 0) {
-					Map<String, Object> value = getValue();
+					Map<String, Object> value = null;
+					while (null == value) {
+						if (child.isUnsubscribed()) {
+							return;
+						}
+						value = mongoStore.getIncomeEvent(collection);
+						if (null == value) {
+							try {
+								checkDelayTimeUnit.sleep(checkDelay);
+							} catch (InterruptedException e) {
+								child.onError(e);
+								return;
+							}
+						}
+					}
 					child.onNext(value);
 					if (child.isUnsubscribed()) {
 						return;
 					}
 					batchSize--;
+					emitted++;
 				}
 
-				batchSize = requested.getAndAdd(emitted);
+				batchSize = requested.getAndAdd(-emitted);
 			} while (batchSize > 0);
 
-/*
-			Map<String, Object> incomeEvent = null;
-			try {
-				while (null == incomeEvent) {
-					if (child.isUnsubscribed()) {
-						return;
-					}
-					incomeEvent = mongoStore.getIncomeEvent();
-					if (null == incomeEvent) {
-						TimeUnit.SECONDS.sleep(5);
-					}
-				}
-			} catch (InterruptedException e) {
-				// let them go
-			}
-			child.onNext(incomeEvent);
-*/
-
-
-			executor.schedule(() ->{
-				Map<String, Object> value = mongoStore.getIncomeEvent();
-				resumeProcess(value);
-			}, 5, TimeUnit.SECONDS);
-
 		}
-
-	}
-
-	private Map<String, Object> getValue() {
-		Map<String, Object> incomeEvent = mongoStore.getIncomeEvent();
-		return incomeEvent;
 	}
 }
