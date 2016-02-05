@@ -15,7 +15,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.annotation.DirtiesContext;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import ru.thprom.mrp.md.process.RxMongo;
+import ru.thprom.mrp.md.process.MongoQueue;
 import rx.Observable;
 
 import java.io.File;
@@ -35,7 +35,7 @@ public class PlainTest extends CamelSpringTestSupport {
 
     protected CamelContext camelContext;
 
-	private RxMongo rxMongo;
+	private MongoQueue mongoQueue;
 
 	@EndpointInject(uri = "mock:result")
     protected MockEndpoint mockResult;
@@ -69,7 +69,7 @@ public class PlainTest extends CamelSpringTestSupport {
 
 	@Test
 	public void testInputProcess() {
-		Observable<Map> mongo = rxMongo.toObservable();
+		Observable<Map> mongo = mongoQueue.toObservable();
 		mongo.take(1).subscribe(
 				System.out::println,
 				Throwable::printStackTrace,
@@ -84,7 +84,7 @@ public class PlainTest extends CamelSpringTestSupport {
         env = applicationContext.getBean(Environment.class);
         addTestRoutes(env);
 
-		rxMongo = (RxMongo) applicationContext.getBean("rxMongo");
+		mongoQueue = (MongoQueue) applicationContext.getBean("rxMongo");
 
 		return applicationContext;
     }

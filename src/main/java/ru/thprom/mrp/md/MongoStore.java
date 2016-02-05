@@ -1,13 +1,10 @@
 package ru.thprom.mrp.md;
 
 import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
-import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.FindOneAndUpdateOptions;
-import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 
 import java.util.Date;
@@ -18,7 +15,8 @@ import java.util.Map;
  */
 public class MongoStore {
 
-	public static final String COLLECTION_INCOMING = "incoming";
+	public static final String INCOMING_XML = "incoming.xml";
+	public static final String INCOMING_BIN = "incoming.bin";
 
 	private MongoClient mongoClient;
 	private MongoDatabase database;
@@ -31,12 +29,17 @@ public class MongoStore {
 	}
 
 	public void saveEvent(String filename, String path) {
-		MongoCollection<Document> incoming = database.getCollection(COLLECTION_INCOMING);
+		MongoCollection<Document> collection;
+		if (filename.endsWith(".xml")) {
+			collection = database.getCollection(INCOMING_XML);
+		} else {
+			collection = database.getCollection(INCOMING_BIN);
+		}
 		Document document = new Document("filename", filename)
 				.append("path", path)
 				.append("state", "income")
 				.append("mTime", new Date());
-		incoming.insertOne(document);
+		collection.insertOne(document);
 	}
 
 	public Map<String, Object> getIncomeEvent(String collection) {

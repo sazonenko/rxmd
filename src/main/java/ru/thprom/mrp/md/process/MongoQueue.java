@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Created by void on 03.02.16
  */
-public final class RxMongo implements Observable.OnSubscribe<Map> {
+public final class MongoQueue implements Observable.OnSubscribe<Map> {
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	private AtomicLong requested = new AtomicLong(0);
@@ -25,7 +25,7 @@ public final class RxMongo implements Observable.OnSubscribe<Map> {
 	private TimeUnit checkDelayTimeUnit = TimeUnit.MILLISECONDS;
 	private long checkDelay = 1000;
 
-	public RxMongo(String collection) {
+	public MongoQueue(String collection) {
 		this.collection = collection;
 	}
 

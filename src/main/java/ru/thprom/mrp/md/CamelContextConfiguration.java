@@ -18,7 +18,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.env.Environment;
 import org.springframework.jms.connection.JmsTransactionManager;
-import ru.thprom.mrp.md.process.RxMongo;
+import ru.thprom.mrp.md.process.MongoQueue;
 
 import javax.jms.ConnectionFactory;
 
@@ -61,10 +61,10 @@ public class CamelContextConfiguration extends SingleRouteCamelConfiguration imp
 	}
 
 	@Bean
-	public RxMongo rxMongo() {
-		RxMongo rxMongo = new RxMongo(MongoStore.COLLECTION_INCOMING);
-		rxMongo.setMongoStore(mongoStore());
-		return rxMongo;
+	public MongoQueue rxMongo() {
+		MongoQueue mongoQueue = new MongoQueue(MongoStore.INCOMING_XML);
+		mongoQueue.setMongoStore(mongoStore());
+		return mongoQueue;
 	}
 
 	@Bean
