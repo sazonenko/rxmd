@@ -73,7 +73,7 @@ public class PlainTest extends CamelSpringTestSupport {
 		mongo.take(1).subscribe(
 				System.out::println,
 				Throwable::printStackTrace,
-				() -> System.out.println("Done")
+				() -> log.info("Done")
 		);
 	}
 
