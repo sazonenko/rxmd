@@ -55,7 +55,8 @@ public class CamelContextConfiguration extends SingleRouteCamelConfiguration imp
 	@Bean
 	public MongoStore mongoStore() {
 		MongoStore mongoStore = new MongoStore();
-		mongoStore.setConnectionURI(env.getProperty("mongo.url"));
+		mongoStore.setHost(env.getProperty("mongo.host"));
+		mongoStore.setPort(env.getProperty("mongo.port", Integer.class));
 		mongoStore.setDatabaseName(env.getProperty("mongo.database"));
 		mongoStore.connect();
 		return mongoStore;

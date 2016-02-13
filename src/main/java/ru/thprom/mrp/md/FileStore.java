@@ -39,6 +39,10 @@ public class FileStore {
 		return storeDir;
 	}
 
+	public String getStoreRoot() {
+		return storeRoot;
+	}
+
 	public void setStoreRoot(String storeRoot) {
 		this.storeRoot = storeRoot;
 	}

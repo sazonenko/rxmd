@@ -15,6 +15,7 @@
     limitations under the License.
 -->
 <!-- START SNIPPET: example -->
+<!--suppress SpringFacetInspection -->
 <beans
         xmlns="http://www.springframework.org/schema/beans"
         xmlns:amq="http://activemq.apache.org/schema/core"
