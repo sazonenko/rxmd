@@ -22,5 +22,5 @@ md_mongodb:
     - ./etc/mongo:/etc/mongo
   command: -f /etc/mongo/mongodb.conf
   ports:
-    - "27017:27017"
+    - "27018:27018"
 

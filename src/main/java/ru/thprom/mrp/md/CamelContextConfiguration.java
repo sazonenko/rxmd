@@ -20,6 +20,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.jms.connection.JmsTransactionManager;
 import ru.thprom.mrp.md.process.MongoQueue;
 import ru.thprom.mrp.md.process.RxContext;
+import ru.thprom.mrp.md.process.XmlMessageParser;
 
 import javax.jms.ConnectionFactory;
 
@@ -66,17 +67,25 @@ public class CamelContextConfiguration extends SingleRouteCamelConfiguration imp
 	public RxContext rxContext() {
 		RxContext rxContext = new RxContext();
 		rxContext.setMongoStore(mongoStore());
+		XmlMessageParser parser = new XmlMessageParser();
+		parser.setFileStore(fileStore());
+		rxContext.setParser(parser);
 		return rxContext;
 	}
 
 	@Bean
 	public InputRouteBuilder inputRouteBuilder() {
 		InputRouteBuilder inputRouteBuilder = new InputRouteBuilder();
-		FileStore fileStore = new FileStore();
-		fileStore.setStoreRoot(env.getProperty("md.store.root"));
-		inputRouteBuilder.setFileStore(fileStore);
+		inputRouteBuilder.setFileStore(fileStore());
 		inputRouteBuilder.setMongoStore(mongoStore());
 		return inputRouteBuilder;
+	}
+
+	@Bean
+	public FileStore fileStore() {
+		FileStore fileStore = new FileStore();
+		fileStore.setStoreRoot(env.getProperty("md.store.root"));
+		return fileStore;
 	}
 
 	@Override

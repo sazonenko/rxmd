@@ -34,6 +34,7 @@ public class MessageProcessor {
 	private enum XPaths {
 		ATTACH_NAME("/*/Info/Attach/Name"),
 		MESSAGE_GUID("/*/Info/GUID"),
+		MESSAGE_TYPE("/*/Info/Type"),
 		ORIGIN_CODE("/*/Info/Sender/@Code"),
 		DESTINATION_CODE("/*/Info/Recipient/@Code"),
 		MESSAGE_DATE("/*/Info/Sender/@Date");
@@ -41,9 +42,15 @@ public class MessageProcessor {
 		private final String text;
 		private final XPathExpression expression;
 
-		XPaths(final String text) throws XPathExpressionException {
+		XPaths(final String text){
 			this.text = text;
-			expression = xPathFactory.newXPath().compile(text);
+			XPathExpression compile = null;
+			try {
+				compile = xPathFactory.newXPath().compile(text);
+			} catch (XPathExpressionException e) {
+				e.printStackTrace();
+			}
+			expression = compile;
 		}
 
 		@Override
@@ -57,7 +64,7 @@ public class MessageProcessor {
 
 		public String eval(Document doc, String fileName) {
 			try {
-				return (String) expression.evaluate(doc, XPathConstants.STRING);
+					return (String) expression.evaluate(doc, XPathConstants.STRING);
 			} catch (XPathExpressionException e) {
 				log.error("error in parsing XML ["+ fileName+"] : "+ e);
 				return null;

@@ -56,7 +56,9 @@ public class PlainTest extends CamelSpringTestSupport {
 		String storeDir = env.getProperty("md.store.root") + FS + month.format(now) + FS + day.format(now) + FS + env.getProperty("md.test.code") + FS;
 
 		File result = new File(storeDir, fileName);
-		result.delete();
+		if(result.delete()) {
+			log.info("previous file deleted");
+		}
 
 		start.sendBodyAndHeader(body, Constants.HEADER_CAMEL_FILE_NAME, fileName);
 
